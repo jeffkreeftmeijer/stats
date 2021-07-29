@@ -8,6 +8,57 @@ Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]] to syn
   aws s3 sync s3://jeffkreeftmeijer.com-log-cf logs
 #+end_src
 
+With the logs downloaded, generate a report by passing the logs to [[https://goaccess.io][GoAccess]] to produce a 28-day report:
+
+#+caption: =generate.sh=
+#+begin_src shell :tangle generate.sh :shebang #!/bin/sh :eval no
+  find logs -name "*.gz" | \
+      xargs gzcat | \
+      goaccess \
+	  --log-format CLOUDFRONT \
+	  --date-format CLOUDFRONT \
+	  --time-format CLOUDFRONT \
+	  --ignore-crawlers \
+	  --ignore-status=301 \
+	  --ignore-status=302 \
+	  --keep-last=28 \
+	  --output index.html
+#+end_src
+
+This command consists of three commands piped together:
+
+- =find logs -name "*.gz"= ::
+  Produce a list of all files in the =logs= directory.
+  Because of the number of files in the logs directory, passing a directory glob to =gunzip= directly would result in an "argument list too long" error because the list of filenames exceeds the =ARG_MAX= configuration:
+
+  #+begin_src shell :exports both :results output :prologue "exec 2>&1" :epilogue ":" :cache yes
+    gunzip logs/*.gz
+  #+end_src
+
+  #+RESULTS[96e138d4133a04407bd6ac7ed093f4181154b72c]:
+  : zsh: argument list too long: gunzip
+
+- =xargs gzcat= ::
+  =xargs= takes the output from =find=---which outputs a stream of filenames delimited by newlines---and calls the =gzcat= utility for every line by appending it to the passed command.
+  Essentially, this runs the =gzcat= command for every file in the =logs= directory.
+
+  =gzcat= is an alias for =gzip --decompress --stdout=, which decompresses gzipped files and prints the output to the standard output stream.
+
+- =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
+
+  =goaccess= reads the decompressed logs to generate a report with the following options:
+
+  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFron't log, date and time formats to parse the log lines.
+  - =--ignore-crawlers --ignore-status=301 --ignore-status=302= :: Ignore crawlers and redirects.
+  - =--keep-last=28= :: Use the last 28 days to build the report.
+  - =--output=index.html= :: Output an HTML report to a file named =index.html= in the current directory.
+
+To sync the logs and generate a new report, run the =sync.sh= and =generate.sh= scripts in a cron job every night at midnight:
+
+#+begin_src shell
+  echo '0 0 * * * ~/stats/sync.sh && ~/stats/generate.sh' | crontab
+#+end_src
+
 [fn:filtering] Running the =aws s3 sync= command on an empty local directory took me two hours and produced a 2.1 GB directory of =.gz= files for roughly 3 years of logs.
 Updating the logs by running the same command takes about five minutes.
 
