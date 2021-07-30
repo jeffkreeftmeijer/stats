@@ -1,5 +1,5 @@
 #!/bin/sh
-find logs -name "*.gz" | \
+find ~/stats/logs -name "*.gz" | \
     xargs gzcat | \
     goaccess \
 	--log-format CLOUDFRONT \

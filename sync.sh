@@ -1,2 +1,2 @@
 #!/bin/sh
-aws s3 sync s3://jeffkreeftmeijer.com-log-cf logs
+/usr/local/bin/aws s3 sync s3://jeffkreeftmeijer.com-log-cf ~/stats/logs
