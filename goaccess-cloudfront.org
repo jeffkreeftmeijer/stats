@@ -48,7 +48,7 @@ This command consists of three commands piped together:
 
   =goaccess= reads the decompressed logs to generate a report with the following options:
 
-  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFron't log, date and time formats to parse the log lines.
+  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFront's log, date and time formats to parse the log lines.
   - =--ignore-crawlers --ignore-status=301 --ignore-status=302= :: Ignore crawlers and redirects.
   - =--keep-last=28= :: Use the last 28 days to build the report.
   - =--output=index.html= :: Output an HTML report to a file named =index.html= in the current directory.
