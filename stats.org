@@ -1,7 +1,7 @@
 #+title: Web analytics from CloudFront logs with GoAccess
 
-First, turn on [[https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff][/Standard logging/]] in your CloudFront Distribution settings to get logs written to an S3 bucket. 
-Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]] to sync the logs to a local directory:[fn:filtering]
+First, turn on [[https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff][turn on logging]] in your CloudFront Distribution settings to get logs written to an S3 bucket. 
+Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]][fn:aws-install] to sync the logs to a local directory:[fn:filtering]
 
 #+caption: =sync.sh=
 #+begin_src shell :tangle sync.sh :shebang #!/bin/sh :eval no
@@ -58,6 +58,14 @@ To sync the logs and generate a new report, run the =sync.sh= and =generate.sh= 
 #+begin_src shell
   echo '0 0 * * * ~/stats/sync.sh && ~/stats/generate.sh' | crontab
 #+end_src
+
+[fn:aws-install] On a mac, use Homebrew:
+
+#+begin_src shell :eval no
+  brew install awscli
+#+end_src
+
+#+RESULTS:
 
 [fn:filtering] Running the =aws s3 sync= command on an empty local directory took me two hours and produced a 2.1 GB directory of =.gz= files for roughly 3 years of logs.
 Updating the logs by running the same command takes about five minutes.
