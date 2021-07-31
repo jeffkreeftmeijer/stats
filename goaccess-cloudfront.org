@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       55D249EB-A1A9-4A33-A292-57EA71BB08C5
+:END:
 #+title: Web analytics from CloudFront access logs with GoAccess
 #+author: Jeff Kreeftmeijer
 #+html_path: /goaccess-cloudfront/
