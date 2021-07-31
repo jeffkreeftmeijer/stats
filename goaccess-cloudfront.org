@@ -6,7 +6,6 @@
 #+html_path: /goaccess-cloudfront/
 #+date: 2012-07-30
 #+description: Set up GoAccess to parse CloudFront access logs and generate web analytics for static sites hosted on AWS
-#+setupfile: ~/articles/setup.org
 
 First, turn on [[https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff][turn on logging]] in your CloudFront Distribution settings to get logs written to an S3 bucket. 
 Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]][fn:aws-install] to sync the logs to a local directory:[fn:filtering]
