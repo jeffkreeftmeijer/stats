@@ -19,7 +19,7 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
 #+begin_src shell :tangle generate.sh :shebang #!/bin/sh :eval no
   find ~/stats/logs -name "*.gz" | \
       xargs gzcat | \
-      goaccess \
+      /usr/local/bin/goaccess \
 	  --log-format CLOUDFRONT \
 	  --date-format CLOUDFRONT \
 	  --time-format CLOUDFRONT \

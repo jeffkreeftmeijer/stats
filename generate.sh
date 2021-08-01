@@ -1,7 +1,7 @@
 #!/bin/sh
 find ~/stats/logs -name "*.gz" | \
     xargs gzcat | \
-    goaccess \
+    /usr/local/bin/goaccess \
 	--log-format CLOUDFRONT \
 	--date-format CLOUDFRONT \
 	--time-format CLOUDFRONT \
