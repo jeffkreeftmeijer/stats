@@ -29,7 +29,7 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
 	  --ignore-status=301 \
 	  --ignore-status=302 \
 	  --keep-last=28 \
-	  --output index.html
+	  --output ~/stats/index.html
 #+end_src
 
 This command consists of three commands piped together:
@@ -51,14 +51,14 @@ This command consists of three commands piped together:
 
   =gzcat= is an alias for =gzip --decompress --stdout=, which decompresses gzipped files and prints the output to the standard output stream.
 
-- =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
+- =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output ~/stats/index.html= ::
 
   =goaccess= reads the decompressed logs to generate a report with the following options:
 
   - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFront's log, date and time formats to parse the log lines.
   - =--ignore-crawlers --ignore-status=301 --ignore-status=302= :: Ignore crawlers and redirects.
   - =--keep-last=28= :: Use the last 28 days to build the report.
-  - =--output=index.html= :: Output an HTML report to a file named =index.html= in the current directory.
+  - =--output=~/stats/index.html= :: Output an HTML report to a file named =~/stats/index.html=.
 
 To sync the logs and generate a new report, run the =sync.sh= and =generate.sh= scripts in a cron job every night at midnight:
 

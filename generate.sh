@@ -9,4 +9,4 @@ find ~/stats/logs -name "*.gz" | \
 	--ignore-status=301 \
 	--ignore-status=302 \
 	--keep-last=28 \
-	--output index.html
+	--output ~/stats/index.html
