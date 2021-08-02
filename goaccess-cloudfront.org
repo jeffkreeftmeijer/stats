@@ -15,10 +15,10 @@ Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]][fn:aws
   /usr/local/bin/aws s3 sync s3://jeffkreeftmeijer.com-log-cf ~/stats/logs
 #+end_src
 
-With the logs downloaded, generate a report by passing the logs to [[https://goaccess.io][GoAccess]] to produce a 28-day report:
+With the logs downloaded, generate a report by passing the logs to [[https://goaccess.io][GoAccess]] to produce a 28-day HTML[fn:formats] report:
 
-#+caption: =generate.sh=
-#+begin_src shell :tangle generate.sh :shebang #!/bin/sh :eval no
+#+caption: =html.sh=
+#+begin_src shell :tangle html.sh :shebang #!/bin/sh :eval no
   find ~/stats/logs -name "*.gz" | \
       xargs gzcat | \
       /usr/local/bin/goaccess \
@@ -60,10 +60,10 @@ This command consists of three commands piped together:
   - =--keep-last=28= :: Use the last 28 days to build the report.
   - =--output=~/stats/index.html= :: Output an HTML report to a file named =~/stats/index.html=.
 
-To sync the logs and generate a new report, run the =sync.sh= and =generate.sh= scripts in a cron job every night at midnight:
+To sync the logs and generate a new report, run the =sync.sh= and =html.sh= scripts in a cron job every night at midnight:
 
 #+begin_src shell
-  echo '0 0 * * * ~/stats/sync.sh && ~/stats/generate.sh' | crontab
+  echo '0 0 * * * ~/stats/sync.sh && ~/stats/html.sh' | crontab
 #+end_src
 
 [fn:aws-install] On a mac, use Homebrew:
@@ -90,3 +90,21 @@ While this still loops over all files, it won't download anything outside of the
 
 The command accepts the =--include== option multiple times, so it's possible to select multiple months like this.
 One could, theoretically, write a script that finds the current year and month, then downloads that stats matching that month and the month before it to produce a 28-day report.
+
+[fn:formats] GoAccess generates JSON and CSV files when passing a filename with a =.json= or =.csv= extension, respectively.
+To generate the 28-day report in CSV format:
+
+#+caption: =csv.sh=
+#+begin_src shell :tangle csv.sh :shebang #!/bin/sh :eval no
+  find ~/stats/logs -name "*.gz" | \
+      xargs gzcat | \
+      /usr/local/bin/goaccess \
+	  --log-format CLOUDFRONT \
+	  --date-format CLOUDFRONT \
+	  --time-format CLOUDFRONT \
+	  --ignore-crawlers \
+	  --ignore-status=301 \
+	  --ignore-status=302 \
+	  --keep-last=28 \
+	  --output ~/stats/stats.csv
+#+end_src
