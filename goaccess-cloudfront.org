@@ -25,6 +25,7 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
 #+begin_src shell
   find logs -name "*.gz" | \
       xargs gzcat | \
+      grep --invert-match --file=exclude.txt | \
       /usr/local/bin/goaccess \
 	  --log-format CLOUDFRONT \
 	  --date-format CLOUDFRONT \
@@ -36,7 +37,7 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
 	  --output index.html
 #+end_src
 
-This command consists of three commands piped together:
+This command consists of four commands piped together:
 
 - =find logs -name "*.gz"= ::
   Produce a list of all files in the =logs= directory.
@@ -54,6 +55,19 @@ This command consists of three commands piped together:
   Essentially, this runs the =gzcat= command for every file in the =logs= directory.
 
   =gzcat= is an alias for =gzip --decompress --stdout=, which decompresses gzipped files and prints the output to the standard output stream.
+
+- =grep --invert-match --file=exclude.txt= ::
+  =grep= takes the input stream and filters out all log lines that match a line in the exclude file (=exclude.txt=).
+  The exclude file is a list of paths that are ignored when producing the report, and currently only consists of the feed's path:
+
+  #+header: :exports results
+  #+header: :cache yes
+  #+begin_src shell
+    cat exclude.txt
+  #+end_src
+
+  #+RESULTS[06d24bb9e706ce946670603642b93a256cc28b44]:
+  : feed.xml
 
 - =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
 
@@ -106,6 +120,7 @@ To generate the 28-day report in CSV format:
 #+begin_src shell
   find logs -name "*.gz" | \
       xargs gzcat | \
+      grep --invert-match --file=exclude.txt | \
       /usr/local/bin/goaccess \
 	  --log-format CLOUDFRONT \
 	  --date-format CLOUDFRONT \
@@ -114,5 +129,5 @@ To generate the 28-day report in CSV format:
 	  --ignore-status=301 \
 	  --ignore-status=302 \
 	  --keep-last=28 \
-	  --output ~/stats/stats.csv
+	  --output stats.csv
 #+end_src
