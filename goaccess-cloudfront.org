@@ -58,13 +58,16 @@ This command consists of four commands piped together:
 
 - =grep --invert-match --file=exclude.txt= ::
   =grep= takes the input stream and filters out all log lines that match a line in the exclude file (=exclude.txt=).
-  The exclude file is a list of words that are ignored when producing the report, and currently consists of the =HEAD= HTTP request type and the path to the feed file:
+  The exclude file is a list of words that are ignored when producing the report[fn:exclude].
 
-  #+header: :tangle exclude.txt
-  #+begin_example
-    HEAD
-    feed.xml
-  #+end_example
+[fn:exclude] My =exclude.txt= currently consists of the =HEAD= HTTP request type and the path to the feed file:
+
+#+header: :tangle exclude.txt
+#+begin_example
+  HEAD
+  feed.xml
+#+end_example
+
 
 - =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
 
