@@ -18,7 +18,10 @@ Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]][fn:aws
 With the logs downloaded, generate a report by passing the logs to [[https://goaccess.io][GoAccess]] to produce a 28-day HTML[fn:formats] report:
 
 #+caption: =html.sh=
-#+begin_src shell :tangle html.sh :shebang #!/bin/sh :eval no
+#+header: :tangle html.sh
+#+header: :shebang #!/bin/sh
+#+header: :eval no
+#+begin_src shell
   find ~/stats/logs -name "*.gz" | \
       xargs gzcat | \
       /usr/local/bin/goaccess \
@@ -95,7 +98,10 @@ One could, theoretically, write a script that finds the current year and month, 
 To generate the 28-day report in CSV format:
 
 #+caption: =csv.sh=
-#+begin_src shell :tangle csv.sh :shebang #!/bin/sh :eval no
+#+header: :tangle csv.sh
+#+header: :shebang #!/bin/sh
+#+header: :eval no
+#+begin_src shell
   find ~/stats/logs -name "*.gz" | \
       xargs gzcat | \
       /usr/local/bin/goaccess \
