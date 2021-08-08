@@ -1,6 +1,8 @@
 #!/bin/sh
-find ~/stats/logs -name "*.gz" | \
+cd ~/stats
+find logs -name "*.gz" | \
     xargs gzcat | \
+    grep --invert-match --file=exclude.txt | \
     /usr/local/bin/goaccess \
 	--log-format CLOUDFRONT \
 	--date-format CLOUDFRONT \
@@ -9,4 +11,4 @@ find ~/stats/logs -name "*.gz" | \
 	--ignore-status=301 \
 	--ignore-status=302 \
 	--keep-last=28 \
-	--output ~/stats/index.html
+	--output index.html
