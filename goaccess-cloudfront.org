@@ -58,7 +58,7 @@ This command consists of four commands piped together:
 
 - =grep --invert-match --file=exclude.txt= ::
   =grep= takes the input stream and filters out all log lines that match a line in the exclude file (=exclude.txt=).
-  The exclude file is a list of paths that are ignored when producing the report, and currently only consists of the feed's path:
+  The exclude file is a list of words that are ignored when producing the report, and currently consists of the =HEAD= HTTP request type and the path to the feed file:
 
   #+header: :exports results
   #+header: :cache yes
