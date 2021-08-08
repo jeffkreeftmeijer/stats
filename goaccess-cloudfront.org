@@ -12,7 +12,7 @@ Then, use the [[https://aws.amazon.com/cli/][AWS command line interface]][fn:aws
 
 #+caption: =sync.sh=
 #+begin_src shell :tangle sync.sh :shebang #!/bin/sh :eval no
-  /usr/local/bin/aws s3 sync s3://jeffkreeftmeijer.com-log-cf ~/stats/logs
+  /usr/local/bin/aws s3 sync s3://jeffkreeftmeijer.com-log-cf logs
 #+end_src
 
 With the logs downloaded, generate a report by passing the logs to [[https://goaccess.io][GoAccess]] to produce a 28-day HTML[fn:formats] report:
@@ -21,8 +21,9 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
 #+header: :tangle html.sh
 #+header: :shebang #!/bin/sh
 #+header: :eval no
+#+header: :prologue cd ~/stats
 #+begin_src shell
-  find ~/stats/logs -name "*.gz" | \
+  find logs -name "*.gz" | \
       xargs gzcat | \
       /usr/local/bin/goaccess \
 	  --log-format CLOUDFRONT \
@@ -32,7 +33,7 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
 	  --ignore-status=301 \
 	  --ignore-status=302 \
 	  --keep-last=28 \
-	  --output ~/stats/index.html
+	  --output index.html
 #+end_src
 
 This command consists of three commands piped together:
@@ -42,7 +43,7 @@ This command consists of three commands piped together:
   Because of the number of files in the logs directory, passing a directory glob to =gunzip= directly would result in an "argument list too long" error because the list of filenames exceeds the =ARG_MAX= configuration:
 
   #+begin_src shell :exports both :results output :prologue "exec 2>&1" :epilogue ":" :cache yes
-    gunzip ~/stats/logs/*.gz
+    gunzip logs/*.gz
   #+end_src
 
   #+RESULTS[96e138d4133a04407bd6ac7ed093f4181154b72c]:
@@ -50,18 +51,18 @@ This command consists of three commands piped together:
 
 - =xargs gzcat= ::
   =xargs= takes the output from =find=---which outputs a stream of filenames delimited by newlines---and calls the =gzcat= utility for every line by appending it to the passed command.
-  Essentially, this runs the =gzcat= command for every file in the =~/stats/logs= directory.
+  Essentially, this runs the =gzcat= command for every file in the =logs= directory.
 
   =gzcat= is an alias for =gzip --decompress --stdout=, which decompresses gzipped files and prints the output to the standard output stream.
 
-- =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output ~/stats/index.html= ::
+- =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
 
   =goaccess= reads the decompressed logs to generate a report with the following options:
 
   - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFront's log, date and time formats to parse the log lines.
   - =--ignore-crawlers --ignore-status=301 --ignore-status=302= :: Ignore crawlers and redirects.
   - =--keep-last=28= :: Use the last 28 days to build the report.
-  - =--output=~/stats/index.html= :: Output an HTML report to a file named =~/stats/index.html=.
+  - =--output=index.html= :: Output an HTML report to a file named =index.html=.
 
 To sync the logs and generate a new report, run the =sync.sh= and =html.sh= scripts in a cron job every night at midnight:
 
@@ -101,8 +102,9 @@ To generate the 28-day report in CSV format:
 #+header: :tangle csv.sh
 #+header: :shebang #!/bin/sh
 #+header: :eval no
+#+header: :prologue cd ~/stats
 #+begin_src shell
-  find ~/stats/logs -name "*.gz" | \
+  find logs -name "*.gz" | \
       xargs gzcat | \
       /usr/local/bin/goaccess \
 	  --log-format CLOUDFRONT \
