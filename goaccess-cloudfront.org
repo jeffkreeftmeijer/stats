@@ -27,7 +27,7 @@ With the logs downloaded, generate a report by passing the logs to [[https://goa
       xargs gzcat | \
       grep --invert-match --file=exclude.txt | \
       /usr/local/bin/goaccess \
-	  --log-format CLOUDFRONT \
+	  --log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^" \
 	  --date-format CLOUDFRONT \
 	  --time-format CLOUDFRONT \
 	  --ignore-crawlers \
@@ -69,11 +69,12 @@ This command consists of four commands piped together:
 #+end_example
 
 
-- =goaccess --log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
+- =goaccess --log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^" --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
 
   =goaccess= reads the decompressed logs to generate a report with the following options:
 
-  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFront's log, date and time formats to parse the log lines.
+  - =--log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^"= :: Use CloudFront's log format.[fn:log-format]
+  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFront's date and time formats to parse the log lines.
   - =--ignore-crawlers --ignore-status=301 --ignore-status=302= :: Ignore crawlers and redirects.
   - =--keep-last=28= :: Use the last 28 days to build the report.
   - =--output=index.html= :: Output an HTML report to a file named =index.html=.
@@ -122,7 +123,7 @@ To generate the 28-day report in CSV format:
       xargs gzcat | \
       grep --invert-match --file=exclude.txt | \
       /usr/local/bin/goaccess \
-	  --log-format CLOUDFRONT \
+	  --log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^" \
 	  --date-format CLOUDFRONT \
 	  --time-format CLOUDFRONT \
 	  --ignore-crawlers \
@@ -131,3 +132,34 @@ To generate the 28-day report in CSV format:
 	  --keep-last=28 \
 	  --output stats.csv
 #+end_src
+
+[fn:log-format] Initially, the value for the =--log-format= option was ~CLOUDFRONT~, which points to a [[https://github.com/allinurl/goaccess/blob/d31d37619691abc75cd5e0d54f57b010ace1a58f/src/settings.c#L74][predefined log format]].
+However, [[https://github.com/allinurl/goaccess/commit/c7d3506157368c5d35c5869cee59701c45d67854][that internal value changed]], which broke the script when updating goaccess, producing errors like this:
+
+#+begin_example
+==77953== FILE: -
+==77953== Parsed 10 lines producing the following errors:
+==77953==
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953== Token for '%H' specifier is NULL.
+==77953==
+==77953== Format Errors - Verify your log/date/time format
+#+end_example
+
+I haven't been able to find out what the problem is, so I've reverted to the old log format for the time being.
+I'm suspecting the newly introduced log format in GoAccess doesn't match the old log lines from 2017 anymore.
+
+An example of a log line that doesn't match the new log format:
+
+#+begin_example
+2017-09-17	09:16:00	CDG50	573	132.166.177.54	GET	d2xkchmcg9g2pt.cloudfront.net	/favicon.ico	301	-	Mozilla/5.0%2520(X11;%2520Linux%2520x86_64)%2520KHTML/5.37.0%2520(like%2520Gecko)%2520Konqueror/5%2520KIO/5.37	-	-	Redirect	QgyNFmDkLiZ23dKCu9ozmQFWrGY407bHn9VRlWzhp9KjyCe3b0b4WQ==	jeffkreeftmeijer.com	http	425	0.000	-	-	-	Redirect	HTTP/1.1
+#+end_example
+
