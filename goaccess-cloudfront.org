@@ -51,12 +51,14 @@ This command consists of four commands piped together:
   : zsh: argument list too long: gunzip
 
 - =xargs gzcat= ::
+
   =xargs= takes the output from =find=---which outputs a stream of filenames delimited by newlines---and calls the =gzcat= utility for every line by appending it to the passed command.
   Essentially, this runs the =gzcat= command for every file in the =logs= directory.
 
   =gzcat= is an alias for =gzip --decompress --stdout=, which decompresses gzipped files and prints the output to the standard output stream.
 
 - =grep --invert-match --file=exclude.txt= ::
+
   =grep= takes the input stream and filters out all log lines that match a line in the exclude file (=exclude.txt=).
   The exclude file is a list of words that are ignored when producing the report[fn:exclude].
 
@@ -64,11 +66,20 @@ This command consists of four commands piped together:
 
   =goaccess= reads the decompressed logs to generate a report with the following options:
 
-  - =--log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^"= :: Use CloudFront's log format.[fn:log-format]
-  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= :: Use CloudFront's date and time formats to parse the log lines.
-  - =--ignore-crawlers --ignore-status=301 --ignore-status=302= :: Ignore crawlers and redirects.
-  - =--keep-last=28= :: Use the last 28 days to build the report.
-  - =--output=index.html= :: Output an HTML report to a file named =index.html=.
+  - =--log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^"= ::
+    Use CloudFront's log format.[fn:log-format]
+
+  - =--log-format CLOUDFRONT --date-format CLOUDFRONT --time-format CLOUDFRONT= ::
+    Use CloudFront's date and time formats to parse the log lines.
+
+  - =--ignore-crawlers --ignore-status=301 --ignore-status=302= ::
+    Ignore crawlers and redirects.
+
+  - =--keep-last=28= ::
+    Use the last 28 days to build the report.
+
+  - =--output=index.html= ::
+    Output an HTML report to a file named =index.html=.
 
 To sync the logs and generate a new report, run the =sync.sh= and =html.sh= scripts in a cron job every night at midnight:
 
