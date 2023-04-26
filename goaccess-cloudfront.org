@@ -60,15 +60,6 @@ This command consists of four commands piped together:
   =grep= takes the input stream and filters out all log lines that match a line in the exclude file (=exclude.txt=).
   The exclude file is a list of words that are ignored when producing the report[fn:exclude].
 
-[fn:exclude] My =exclude.txt= currently consists of the =HEAD= HTTP request type and the path to the feed file:
-
-#+header: :tangle exclude.txt
-#+begin_example
-  HEAD
-  feed.xml
-#+end_example
-
-
 - =goaccess --log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^" --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
 
   =goaccess= reads the decompressed logs to generate a report with the following options:
@@ -132,6 +123,14 @@ To generate the 28-day report in CSV format:
 	  --keep-last=28 \
 	  --output stats.csv
 #+end_src
+
+[fn:exclude] My =exclude.txt= currently consists of the =HEAD= HTTP request type and the path to the feed file:
+
+#+header: :tangle exclude.txt
+#+begin_example
+  HEAD
+  feed.xml
+#+end_example
 
 [fn:log-format] Initially, the value for the =--log-format= option was ~CLOUDFRONT~, which points to a [[https://github.com/allinurl/goaccess/blob/d31d37619691abc75cd5e0d54f57b010ace1a58f/src/settings.c#L74][predefined log format]].
 However, [[https://github.com/allinurl/goaccess/commit/c7d3506157368c5d35c5869cee59701c45d67854][that internal value changed]], which broke the script when updating goaccess, producing errors like this:
