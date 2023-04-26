@@ -62,9 +62,9 @@ This command consists of four commands piped together:
   =grep= takes the input stream and filters out all log lines that match a line in the exclude file (=exclude.txt=).
   The exclude file is a list of words that are ignored when producing the report[fn:exclude].
 
-- =goaccess --log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^" --date-format CLOUDFRONT --time-format CLOUDFRONT --ignore-crawlers --ignore-status=301 --ignore-status=302 --keep-last=28 --output index.html= ::
+- =goaccess …= ::
 
-  =goaccess= reads the decompressed logs to generate a report with the following options:
+  The decompressed logs get piped to =goaccess= to generate a report with the following options:
 
   - =--log-format "%d\\t%t\\t%^\\t%b\\t%h\\t%m\\t%^\\t%r\\t%s\\t%R\\t%u\\t%^"= ::
     Use CloudFront's log format.[fn:log-format]
